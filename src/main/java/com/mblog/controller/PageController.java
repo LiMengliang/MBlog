@@ -1,12 +1,11 @@
 package com.mblog.controller;
 
-import com.mblog.bean.Article;
-import com.mblog.bean.ArticleDigest;
-import com.mblog.bean.Auth;
-import com.mblog.bean.Category;
+import com.mblog.bean.*;
+import com.mblog.common.HibernateUtil;
 import com.mblog.service.ArticleDigestsService;
 import com.mblog.service.AuthentificationService;
 import com.mblog.service.CategoryService;
+import org.hibernate.Session;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -56,6 +55,11 @@ public class PageController {
         article.setTitle(title);
         article.setDigest(digest);
         model.addAttribute("article", article);
+
+        // testDatabase();
+        // testGet();
+        CategoryService categoryService = new CategoryService();
+        categoryService.addCategoryIfNotExist("Web Application");
         return "view_article";
     }
 
@@ -102,5 +106,37 @@ public class PageController {
         int count = Integer.valueOf(request.getParameter("count"));
         ArticleDigestsService service = new ArticleDigestsService();
         return service.getArticleDigests(category_id, startIndex, count);
+    }
+
+    private void testDatabase() {
+        System.out.println("Maven + Hibernate + MySQL");
+        Session session = HibernateUtil.getSessionFactory().openSession();
+
+        session.beginTransaction();
+        Stock stock = new Stock();
+
+        stock.setStockCode("4715");
+        stock.setStockName("GENM");
+
+        session.save(stock);
+        session.getTransaction().commit();
+    }
+
+    public void testGet(){
+        Session session = null;
+        try{
+            session = HibernateUtil.getSessionFactory().openSession();
+            session.beginTransaction();
+            Stock stock = (Stock)session.load(Stock.class, 1); //除了load还可以使用get方法
+            System.out.println("stock-name="+stock.getStockName());
+            System.out.println("stock-code="+stock.getStockCode());
+
+            session.getTransaction().commit();
+        }catch(Exception e){
+            e.printStackTrace();
+            session.getTransaction().rollback();
+        }finally{
+            HibernateUtil.shutdown();
+        }
     }
 }

@@ -2,6 +2,7 @@ package com.mblog.bean;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -10,12 +11,27 @@ import java.util.List;
  */
 public class Article implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     private String title;
     private String markDown;
     private String htmlDocument;
     private String categoryName;
-    private List<String> tags;
+    private String tags;
     private String digest;
+    private Date date;
+
+    public Article() {
+
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
 
     /**
      * Get title.
@@ -69,7 +85,7 @@ public class Article implements Serializable {
      * Get tags.
      * @return Tags.
      */
-    public List<String> getTags() {
+    public String getTags() {
         return tags;
     }
 
@@ -77,7 +93,7 @@ public class Article implements Serializable {
      * Set tags.
      * @param tags Tags.
      */
-    public void setTags(List<String> tags) {
+    public void setTags(String tags) {
         this.tags = tags;
     }
 
@@ -102,7 +118,7 @@ public class Article implements Serializable {
      * @param tag The tag.
      */
     public void addTag(String tag) {
-        tags.add(tag);
+        tags = tags + " " + tag;
     }
 
     /**
@@ -110,9 +126,7 @@ public class Article implements Serializable {
      * @param tag The tag to be removed.
      */
     public void removeTag(String tag) {
-        if(tags.contains(tag)) {
-            tags.remove(tag);
-        }
+        tags.replace(" " + tag, "");
     }
 
     /**
