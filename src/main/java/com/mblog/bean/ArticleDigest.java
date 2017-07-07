@@ -65,15 +65,22 @@ public class ArticleDigest implements Serializable {
     private String tags;
     private String category;
 
+    public int getArticleId() {
+        return articleId;
+    }
+
+    private int articleId;
+
     public ArticleDigest() {
 
     }
 
-    public ArticleDigest(String title, String digest, String category, String tags) {
+    public ArticleDigest(String title, String digest, String category, String tags, Date date, int articleId) {
         this.title = title;
         this.date = date;
         this.digest = digest;
         this.category = category;
         this.tags = tags;
+        this.articleId = articleId;
     }
 }

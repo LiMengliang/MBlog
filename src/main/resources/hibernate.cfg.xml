@@ -14,5 +14,6 @@
         <mapping resource="com/mblog/bean/Stock.hbm.xml"></mapping>
         <mapping resource="com/mblog/bean/ArticleDigest.hbm.xml"></mapping>
         <mapping resource="com/mblog/bean/Category.hbm.xml"></mapping>
+        <mapping resource="com/mblog/bean/Article.hbm.xml"></mapping>
     </session-factory>
 </hibernate-configuration>

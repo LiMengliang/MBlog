@@ -56,6 +56,12 @@
             padding-top: 100px;
         }
 
+        h3.title:hover
+        {
+            cursor:pointer;
+            text-decoration:underline;
+        }
+
         /* On small screens, set height to 'auto' for sidenav and grid */
         @media screen and (max-width: 767px) {
             .sidenav {
@@ -77,16 +83,20 @@
 <div class="container-fluid">
     <div class="row content">
         <div class="col-sm-2 sidenav toppadding">
+            <img class="img-circle center-block" src="/resources/image/myIcon.jpg" alt="Generic placeholder image" width="140" height="140">
+            <br>
+            <h5 class="text-center">李梦亮</h5>
+            <h5 class="text-center">美国国家仪器</h5>
             <ul id="category_list" class="nav nav-pills nav-stacked">
             </ul>
             <br>
             <div class="input-group">
                 <input type="text" class="form-control" placeholder="Search Blog..">
                 <span class="input-group-btn">
-          <button class="btn btn-default" type="button">
-            <span class="glyphicon glyphicon-search"></span>
-          </button>
-        </span>
+                    <button class="btn btn-default" type="button">
+                        <span class="glyphicon glyphicon-search"></span>
+                    </button>
+                </span>
             </div>
         </div>
 
@@ -186,22 +196,44 @@
 
     function createDigest(articleDigest) {
         var div = document.createElement("div");
-        var title = document.createElement("h2");
+
+        // title
+        var title = document.createElement("h3");
         title.textContent = articleDigest.title;
-        var creationDate = document.createElement("h5");
-        var dateGraph = document.createElement("span");
-        dateGraph.setAttribute("class", "glyphicon glyphicon-time");
+        title.setAttribute("class", "title");
+        title.onclick = function() {
+            window.location.href="/blog/article?article_id=" + articleDigest.articleId;
+        }
 
-
-        var digestText = document.createElement("p");
+        // digest
+        var digestText = document.createElement("h5");
         digestText.textContent = articleDigest.digest;
+        // tag
+        var tagAndDate = document.createElement("h5");
+        tagAndDate.setAttribute("class", "pull-right");
+        addTags(tagAndDate, articleDigest.tags);
+        var timeSpan = document.createElement("span");
+        timeSpan.textContent = "    创建于" + articleDigest.date;
+        tagAndDate.appendChild(timeSpan);
+
 
         div.appendChild(title);
-        div.appendChild(creationDate);
-        creationDate.textContent = " 创建于" + articleDigest.date;
         div.appendChild(digestText);
+        div.appendChild(tagAndDate);
+        div.appendChild(document.createElement("br"));
         div.appendChild(document.createElement("hr"));
         return div;
+    }
+
+    function addTags(div, tags) {
+        var tagList = tags.split(" ");
+        for (var i = 0; i < tagList.length; i++) {
+            var span = document.createElement("span");
+            span.setAttribute("class", "label label-default tag");
+            span.setAttribute("style", "margin-right: 10px");
+            span.textContent = tagList[i];
+            div.appendChild(span);
+        }
     }
 
     function onPreviousClicked() {
@@ -311,11 +343,6 @@
         }
     }
 
-    function shouldUpdatePaginator(active_page, active_page_button_index, total_page) {
-        return (active_page_button_index < 3 && active_page != active_page_button_index)
-            || (active_page_button_index > 3 && total_page - active_page > 5 - active_page_button_index);
-    }
-
     function getPaginatorOffset(active_page_button_index, active_page, total_page) {
         var offset = 0;
         if(active_page_button_index < 3) {
@@ -329,15 +356,6 @@
         return offset;
     }
     function updatePaginator(offset) {
-        // var offset;
-        // if(active_page_button_index < 3) {
-        //     offset = active_page_button_index - active_page;
-        // }
-        // else {
-        //     offset = total_page - active_page > active_page_button_index - 3 ? active_page_button_index - 3 :
-        //         total_page - active_page;
-        // }
-
         var lis = $("#paginator").find("li");
         for(var i = 1; i < lis.length - 1; i++) {
             var li = lis[i];

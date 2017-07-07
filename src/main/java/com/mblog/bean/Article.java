@@ -13,6 +13,15 @@ public class Article implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    private int id;
     private String title;
     private String markDown;
     private String htmlDocument;

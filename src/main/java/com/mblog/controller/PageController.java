@@ -3,6 +3,7 @@ package com.mblog.controller;
 import com.mblog.bean.*;
 import com.mblog.common.HibernateUtil;
 import com.mblog.service.ArticleDigestsService;
+import com.mblog.service.ArticleService;
 import com.mblog.service.AuthentificationService;
 import com.mblog.service.CategoryService;
 import org.hibernate.Session;
@@ -13,7 +14,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 
@@ -30,6 +34,7 @@ public class PageController {
      */
     @RequestMapping("/article/add")
     public  String addArticle(){
+
         return "add_article";
     }
 
@@ -40,32 +45,54 @@ public class PageController {
      * @return view_article page.
      */
     @RequestMapping(value = "/article/post")
-    public String postArticle(Model model, HttpServletRequest request) {
+    public String postArticle(Model model, HttpServletRequest request) throws UnsupportedEncodingException {
+        request.setCharacterEncoding("UTF-8");
         String html = request.getParameter("editormd-html-code");
         String markdown = request.getParameter("markdownDoc");
         String cateogry = request.getParameter("category");
         String tags = request.getParameter("tags");
         String title = request.getParameter("title");
         String digest = request.getParameter("digest");
+        Date date = new Date();
 
         Article article = new Article();
+        article.setDate(date);
+        article.setMarkDown(markdown);
         article.setHtmlDocument(html);
         article.setCategoryName(cateogry);
-        article.setTags(Arrays.asList(tags.split(" ")));
+        article.setTags(tags);
         article.setTitle(title);
         article.setDigest(digest);
         model.addAttribute("article", article);
 
-        // testDatabase();
-        // testGet();
+        // Update category table.
         CategoryService categoryService = new CategoryService();
-        categoryService.addCategoryIfNotExist("Web Application");
+        categoryService.addCategoryIfNotExist(article.getCategoryName());
+
+        // Update article table;
+        ArticleService articleService = new ArticleService();
+        articleService.addArticle(article);
+
+        // Update article digest table.
+        // ArticleDigestsService digestService = new ArticleDigestsService();
+        // ArticleDigest articleDigest = new ArticleDigest(title, digest, cateogry, tags, date);
+        // digestService.addArticleDigests(articleDigest);
         return "view_article";
     }
 
     @RequestMapping(value = "/blog")
     public String showBlog() {
         return "blog";
+    }
+
+    @RequestMapping(value = "/blog/article")
+    public String showArticle(Model model, HttpServletRequest request) throws UnsupportedEncodingException {
+        request.setCharacterEncoding("UTF-8");
+        String article_id = request.getParameter("article_id");
+        ArticleService articleService = new ArticleService();
+        Article article = articleService.getArticleById(article_id);
+        model.addAttribute("article", article);
+        return "view_article";
     }
 
     @RequestMapping(value = "/admin/login")
@@ -104,8 +131,20 @@ public class PageController {
         String category_id = request.getParameter("category_id");
         int startIndex = Integer.valueOf(request.getParameter("start_index"));
         int count = Integer.valueOf(request.getParameter("count"));
-        ArticleDigestsService service = new ArticleDigestsService();
-        return service.getArticleDigests(category_id, startIndex, count);
+        CategoryService categoryService = new CategoryService();
+
+        ArticleService articleService = new ArticleService();
+        List<Article> articles = articleService.getArticles(categoryService.getCategory(category_id).getName(), startIndex, count);
+        List<ArticleDigest> digests = new ArrayList<ArticleDigest>();
+        for(Article article : articles) {
+            digests.add(new ArticleDigest(article.getTitle(),
+                    article.getDigest(),
+                    article.getCategoryName(),
+                    article.getTags(),
+                    article.getDate(),
+                    article.getId()));
+        }
+        return digests;
     }
 
     private void testDatabase() {

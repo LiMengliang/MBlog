@@ -13,20 +13,51 @@
         <link rel="stylesheet" href="/resources/bootstrap/css/bootstrap.css"/>
         <link rel="stylesheet" href="/resources/editormd/css/editormd.css" />
         <link rel="shortcut icon" href="https://pandao.github.io/editor.md/favicon.ico" type="image/x-icon" />
+        <style>
+            .root-body {
+            background-color: #f1f1f1;
+            }
+        </style>
     </head>
     <body>
-        <form class="am-form" id="add-article-form" action="/article/post" method="post">
-            <div id="layout">
-                <input type="text" class="form-control" name="title" placeholder="输入标题" aria-describedby="sizing-addon1">
-                <div id="editormd">
-                    <textarea class="editormd-markdown-textarea" name="markdownDoc" style="display:none;"></textarea>
+        <nav class="navbar navbar-inverse navbar-static-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="#">代码 / 李的博客</a>
                 </div>
-                <input type="text" class="form-control" name="category" placeholder="输入类别" aria-describedby="sizing-addon1">
-                <input type="text" class="form-control" name="tags" placeholder="输入标签" aria-describedby="sizing-addon1">
-                <input type="text" class="form-control" name="digest" placeholder="输入摘要" aria-describedby="sizing-addon1">
-                <button type="submit" class="btn btn-primary">发布博客</button>
             </div>
-        </form>
+        </nav>
+        <div>
+            <form class="am-form" id="add-article-form" action="/article/post" method="post">
+                <div class="container-fluid">
+                    <div class="row-fluid">
+                        <div class="col-sm-1">
+                        </div>
+                        <div class="col-sm-10">
+                            <div id="layout">
+                                <h4>文档标题：</h4>
+                                <input type="text" class="form-control" name="title" placeholder="输入标题" aria-describedby="sizing-addon1">
+                                <h4>文档内容：</h4>
+                                <div id="editormd">
+                                    <textarea class="editormd-markdown-textarea" name="markdownDoc" style="display:none;"></textarea>
+                                </div>
+                                <h4>文档类别：</h4>
+                                <input type="text" class="form-control" name="category" placeholder="输入类别" aria-describedby="sizing-addon1">
+                                <h4>文档标签：</h4>
+                                <input type="text" class="form-control" name="tags" placeholder="输入标签" aria-describedby="sizing-addon1">
+                                <h4>文档摘要：</h4>
+                                <textarea type="text" class="form-control" name="digest" placeholder="输入摘要" aria-describedby="sizing-addon1"></textarea>
+                                <h4/>
+                                <button type="submit" class="btn btn-primary center-block">发布博客</button>
+                            </div>
+                        </div>
+                        <div class="col-sm-1">
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
         <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
         <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
         <!-- Include all compiled plugins (below), or include individual files as needed -->
@@ -37,7 +68,7 @@
             var testEditor;
             $(function() {
                 testEditor = editormd("editormd", {
-                    width  : "90%",
+                    width  : "100%",
                     height : 720,
                     path : "<%=request.getContextPath()%>/resources/editormd/lib/",
                     //这个配置在simple.html中并没有，但是为了能够提交表单，使用这个配置可以让构造出来的HTML代码直接在第二个隐藏的textarea域中，方便post提交表单。
