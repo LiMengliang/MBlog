@@ -5,7 +5,7 @@
   Time: 5:24 PM
   To change this template use File | Settings | File Templates.
 --%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java"%>
 <html>
     <head lang="zh-Hans">
         <title>添加一篇博客</title>
@@ -28,7 +28,10 @@
             </div>
         </nav>
         <div>
-            <form class="am-form" id="add-article-form" action="/article/post" method="post">
+            <form class="am-form" id="add-article-form" action="/article/post?article_id=${creationInfo.get_Article().getId()}&is_edit=${creationInfo.is_Edit()}" method="post">
+            <param name="article_id" value="${creationInfo.get_Article().getId()}">
+            <param name="is_edit" value="${creationInfo.is_Edit()}">
+            <%--<form class="am-form" id="add-article-form">--%>
                 <div class="container-fluid">
                     <div class="row-fluid">
                         <div class="col-sm-1">
@@ -36,26 +39,25 @@
                         <div class="col-sm-10">
                             <div id="layout">
                                 <h4>文档标题：</h4>
-                                <input type="text" class="form-control" name="title" placeholder="输入标题" aria-describedby="sizing-addon1">
+                                <input type="text" class="form-control" name="title" placeholder="输入标题" aria-describedby="sizing-addon1" value = ${creationInfo.get_Article().getTitle()}>
                                 <h4>文档内容：</h4>
                                 <div id="editormd">
-                                    <textarea class="editormd-markdown-textarea" name="markdownDoc" style="display:none;"></textarea>
+                                    <textarea id="textArea" class="editormd-markdown-textarea" name="markdownDoc" style="display:none;">${creationInfo.get_Article().getMarkDown()}</textarea>
                                 </div>
                                 <h4>文档类别：</h4>
-                                <input type="text" class="form-control" name="category" placeholder="输入类别" aria-describedby="sizing-addon1">
+                                <input type="text" class="form-control" name="category" placeholder="输入类别" aria-describedby="sizing-addon1" value = ${creationInfo.get_Article().getCategoryName()}>
                                 <h4>文档标签：</h4>
-                                <input type="text" class="form-control" name="tags" placeholder="输入标签" aria-describedby="sizing-addon1">
+                                <input type="text" class="form-control" name="tags" placeholder="输入标签" aria-describedby="sizing-addon1" value = ${creationInfo.get_Article().getTags()}>
                                 <h4>文档摘要：</h4>
-                                <textarea type="text" class="form-control" name="digest" placeholder="输入摘要" aria-describedby="sizing-addon1"></textarea>
+                                <textarea type="text" class="form-control" name="digest" placeholder="输入摘要" aria-describedby="sizing-addon1">${creationInfo.get_Article().getDigest()}</textarea>
                                 <h4/>
-                                <button type="submit" class="btn btn-primary center-block">发布博客</button>
+                                <button id="submit_button" type="submit" class="btn btn-primary center-block">发布博客</button>
                             </div>
                         </div>
                         <div class="col-sm-1">
                         </div>
                     </div>
                 </div>
-
             </form>
         </div>
         <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
@@ -64,6 +66,7 @@
         <script src="/resources/bootstrap/js/bootstrap.min.js"></script>
         <script src="/resources/editormd/js/jquery.min.js"></script>
         <script src="/resources/editormd/editormd.min.js"></script>
+
         <script type="text/javascript">
             var testEditor;
             $(function() {
@@ -120,4 +123,3 @@
         </script>
     </body>
 </html>
-

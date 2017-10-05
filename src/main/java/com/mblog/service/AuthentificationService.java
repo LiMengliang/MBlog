@@ -5,6 +5,8 @@ package com.mblog.service;
  */
 public class AuthentificationService {
     public boolean authentificate(String userName, String md5Password) {
+        // meli
+        // Testw3L(0m3
         return userName.equals("meli") && md5Password.equals("92d24fcccfc9cb58a45d8ccd51d33c19");
     }
 }

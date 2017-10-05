@@ -41,7 +41,7 @@
                         var md5_password = md5(password);
                         $.post("/admin/authentification", {user_name:user_name, password:md5_password}, function(msg) {
                             if(msg.authentificated) {
-                                window.location.href = "/article/add";
+                                window.location.href = "/admin/manage";
                             }
                             else {
                                 $("#auth_message").html("用户名或密码错误");

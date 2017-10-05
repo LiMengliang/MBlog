@@ -5,7 +5,7 @@
   Time: 11:38 AM
   To change this template use File | Settings | File Templates.
 --%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java"%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -88,6 +88,7 @@
             <h5 class="text-center">李梦亮</h5>
             <h5 class="text-center">美国国家仪器</h5>
             <ul id="category_list" class="nav nav-pills nav-stacked">
+                <li class="active" onclick="showArticleDigestOfAllCategories()"><a>所有类别</a></li>
             </ul>
             <br>
             <div class="input-group">
@@ -125,6 +126,7 @@
     var all_categories;
     function initialize() {
         queryCategories();
+        showArticleDigestOfAllCategories();
     }
 
     function initializePaginator() {
@@ -160,10 +162,10 @@
             for(var i = 0; i < categories.length; i++) {
                 var category = categories[i];
                 var li = document.createElement("li");
-                if(i == 0) {
-                    li.setAttribute("class", "active");
-                    fetchAndShowDigests(category.category_id);
-                }
+                //if(i == 0) {
+                //    li.setAttribute("class", "active");
+                //    fetchAndShowDigests(category.category_id);
+                // }
                 li.setAttribute("category_id", category.id);
                 var a = document.createElement("a");
                 a.textContent = category.name;
@@ -184,8 +186,19 @@
         })
     }
 
+    function showArticleDigestOfAllCategories() {
+        var lis = $("#category_list").find("li");
+        for(var i = 01; i < lis.length; i++) {
+            var li = lis[i];
+            li.setAttribute("class", "");
+        }
+        lis[0].setAttribute("class", "active");
+        $("#digest_list").children().remove();
+        fetchAndShowDigests("");
+    }
+
     function fetchAndShowDigests(category_id) {
-        $.get("/blog/articles", {category_id:category_id, start_index:0, count:8},
+        $.get("/blog/article_digests", {category_id:category_id, start_index:0, count:8},
         function (digests) {
             for(var i = 0; i < digests.length; i++) {
                 var digest = digests[i];

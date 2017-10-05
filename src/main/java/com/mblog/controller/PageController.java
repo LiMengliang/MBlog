@@ -1,22 +1,17 @@
 package com.mblog.controller;
 
 import com.mblog.bean.*;
-import com.mblog.common.HibernateUtil;
-import com.mblog.service.ArticleDigestsService;
 import com.mblog.service.ArticleService;
 import com.mblog.service.AuthentificationService;
 import com.mblog.service.CategoryService;
-import org.hibernate.Session;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -32,9 +27,20 @@ public class PageController {
      *
      * @return
      */
-    @RequestMapping("/article/add")
-    public  String addArticle(){
-
+    @RequestMapping(value = "/test", method = RequestMethod.GET)
+    @ResponseBody
+    public  Article test(Model model,HttpServletRequest request){
+        Article article = new Article();
+        article.setTitle("this is a test");
+        return article;
+    }
+    /**
+     *
+     * @return
+     */
+    @RequestMapping(value = "/article/add")
+    public  String addArticle(Model model,HttpServletRequest request){
+        model.addAttribute("article_creation_info", new ArticleCreationInfo(false, new Article()));
         return "add_article";
     }
 
@@ -71,18 +77,37 @@ public class PageController {
 
         // Update article table;
         ArticleService articleService = new ArticleService();
-        articleService.addArticle(article);
-
-        // Update article digest table.
-        // ArticleDigestsService digestService = new ArticleDigestsService();
-        // ArticleDigest articleDigest = new ArticleDigest(title, digest, cateogry, tags, date);
-        // digestService.addArticleDigests(articleDigest);
+        String isEdit = request.getParameter("is_edit");
+        String articleId = request.getParameter("article_id");
+        if (isEdit.equals("true")) {
+            articleService.update(articleId, article);
+        }
+        else {
+            articleService.addArticle(article);
+        }
         return "view_article";
     }
 
     @RequestMapping(value = "/blog")
     public String showBlog() {
         return "blog";
+    }
+
+    @RequestMapping(value = "/admin/manage")
+    public String showManagementPage() {
+        return "dashboard";
+    }
+
+    @RequestMapping(value = "/blog/articles")
+    public @ResponseBody
+    List<Article> getAllArticles(Model model, HttpServletRequest request) throws UnsupportedEncodingException {
+        request.setCharacterEncoding("UTF-8");
+        // int startIndex = Integer.valueOf(request.getParameter("start_index"));
+        // int count = Integer.valueOf(request.getParameter("count"));
+        ArticleService articleService = new ArticleService();
+        List<Article> articles = articleService.getArticles("", 0, 0);
+        // model.addAttribute("articles", articles);
+        return articles;
     }
 
     @RequestMapping(value = "/blog/article")
@@ -93,6 +118,24 @@ public class PageController {
         Article article = articleService.getArticleById(article_id);
         model.addAttribute("article", article);
         return "view_article";
+    }
+
+    @RequestMapping(value = "/article/delete")
+    public String deleteArticle(HttpServletRequest request) {
+        String article_id = request.getParameter("article_id");
+        ArticleService articleService = new ArticleService();
+        Article article = articleService.getArticleById(article_id);
+        articleService.removeArticle(article);
+        return "dashboard";
+    }
+
+    @RequestMapping(value = "/article/edit")
+    public String editArticle(Model model, HttpServletRequest request) {
+        String article_id = request.getParameter("article_id");
+        ArticleService articleService = new ArticleService();
+        Article article = articleService.getArticleById(article_id);
+        model.addAttribute("creationInfo", new ArticleCreationInfo(true, article));
+        return "add_article";
     }
 
     @RequestMapping(value = "/admin/login")
@@ -126,7 +169,7 @@ public class PageController {
         return categoryService.getCategories();
     }
 
-    @RequestMapping(value = "/blog/articles")
+    @RequestMapping(value = "/blog/article_digests")
     public @ResponseBody List<ArticleDigest> getArticleDigests(HttpServletRequest request) {
         String category_id = request.getParameter("category_id");
         int startIndex = Integer.valueOf(request.getParameter("start_index"));
@@ -134,7 +177,13 @@ public class PageController {
         CategoryService categoryService = new CategoryService();
 
         ArticleService articleService = new ArticleService();
-        List<Article> articles = articleService.getArticles(categoryService.getCategory(category_id).getName(), startIndex, count);
+        List<Article> articles;
+        if (category_id == "") {
+            articles = articleService.getArticles("", 0, 0);
+        }
+        else {
+            articles = articleService.getArticles(categoryService.getCategory(category_id).getName(), startIndex, count);
+        }
         List<ArticleDigest> digests = new ArrayList<ArticleDigest>();
         for(Article article : articles) {
             digests.add(new ArticleDigest(article.getTitle(),
@@ -145,37 +194,5 @@ public class PageController {
                     article.getId()));
         }
         return digests;
-    }
-
-    private void testDatabase() {
-        System.out.println("Maven + Hibernate + MySQL");
-        Session session = HibernateUtil.getSessionFactory().openSession();
-
-        session.beginTransaction();
-        Stock stock = new Stock();
-
-        stock.setStockCode("4715");
-        stock.setStockName("GENM");
-
-        session.save(stock);
-        session.getTransaction().commit();
-    }
-
-    public void testGet(){
-        Session session = null;
-        try{
-            session = HibernateUtil.getSessionFactory().openSession();
-            session.beginTransaction();
-            Stock stock = (Stock)session.load(Stock.class, 1); //除了load还可以使用get方法
-            System.out.println("stock-name="+stock.getStockName());
-            System.out.println("stock-code="+stock.getStockCode());
-
-            session.getTransaction().commit();
-        }catch(Exception e){
-            e.printStackTrace();
-            session.getTransaction().rollback();
-        }finally{
-            HibernateUtil.shutdown();
-        }
     }
 }
