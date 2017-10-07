@@ -19,7 +19,7 @@
             }
         </style>
     </head>
-    <body>
+    <body onload="initialize()">
         <nav class="navbar navbar-inverse navbar-static-top">
             <div class="container">
                 <div class="navbar-header">
@@ -28,37 +28,34 @@
             </div>
         </nav>
         <div>
-            <form class="am-form" id="add-article-form" action="/article/post?article_id=${creationInfo.get_Article().getId()}&is_edit=${creationInfo.is_Edit()}" method="post">
             <param name="article_id" value="${creationInfo.get_Article().getId()}">
             <param name="is_edit" value="${creationInfo.is_Edit()}">
-            <%--<form class="am-form" id="add-article-form">--%>
-                <div class="container-fluid">
-                    <div class="row-fluid">
-                        <div class="col-sm-1">
-                        </div>
-                        <div class="col-sm-10">
-                            <div id="layout">
-                                <h4>文档标题：</h4>
-                                <input type="text" class="form-control" name="title" placeholder="输入标题" aria-describedby="sizing-addon1" value = ${creationInfo.get_Article().getTitle()}>
-                                <h4>文档内容：</h4>
-                                <div id="editormd">
-                                    <textarea id="textArea" class="editormd-markdown-textarea" name="markdownDoc" style="display:none;">${creationInfo.get_Article().getMarkDown()}</textarea>
-                                </div>
-                                <h4>文档类别：</h4>
-                                <input type="text" class="form-control" name="category" placeholder="输入类别" aria-describedby="sizing-addon1" value = ${creationInfo.get_Article().getCategoryName()}>
-                                <h4>文档标签：</h4>
-                                <input type="text" class="form-control" name="tags" placeholder="输入标签" aria-describedby="sizing-addon1" value = ${creationInfo.get_Article().getTags()}>
-                                <h4>文档摘要：</h4>
-                                <textarea type="text" class="form-control" name="digest" placeholder="输入摘要" aria-describedby="sizing-addon1">${creationInfo.get_Article().getDigest()}</textarea>
-                                <h4/>
-                                <button id="submit_button" type="submit" class="btn btn-primary center-block">发布博客</button>
+            <div class="container-fluid">
+                <div class="row-fluid">
+                    <div class="col-sm-1">
+                    </div>
+                    <div class="col-sm-10">
+                        <div id="layout">
+                            <h4>文档标题：</h4>
+                            <input id = "title" type="text" class="form-control" name="title" placeholder="输入标题" aria-describedby="sizing-addon1">
+                            <h4>文档内容：</h4>
+                            <div id="editormd">
+                                <textarea id="content_markdown" class="editormd-markdown-textarea" name="markdownDoc" style="display:none;"></textarea>
                             </div>
-                        </div>
-                        <div class="col-sm-1">
+                            <h4>文档类别：</h4>
+                            <input id="category" type="text" class="form-control" name="category" placeholder="输入类别" aria-describedby="sizing-addon1" >
+                            <h4>文档标签：</h4>
+                            <input id="tags" type="text" class="form-control" name="tags" placeholder="输入标签" aria-describedby="sizing-addon1" >
+                            <h4>文档摘要：</h4>
+                            <textarea id="digest" type="text" class="form-control" name="digest" placeholder="输入摘要" aria-describedby="sizing-addon1">${creationInfo.get_Article().getDigest()}</textarea>
+                            <h4/>
+                            <button id="submit_button" type="submit" class="btn btn-primary center-block" onclick="saveAndShowArticle()">发布博客</button>
                         </div>
                     </div>
+                    <div class="col-sm-1">
+                    </div>
                 </div>
-            </form>
+            </div>
         </div>
         <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
         <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
@@ -69,14 +66,14 @@
 
         <script type="text/javascript">
             var testEditor;
-            $(function() {
+            function createEditor(markdown) {
                 testEditor = editormd("editormd", {
                     width  : "100%",
                     height : 720,
                     path : "<%=request.getContextPath()%>/resources/editormd/lib/",
                     //这个配置在simple.html中并没有，但是为了能够提交表单，使用这个配置可以让构造出来的HTML代码直接在第二个隐藏的textarea域中，方便post提交表单。
-                    saveHTMLToTextarea : true
-                    // markdown : md,
+                    saveHTMLToTextarea : true,
+                    markdown : markdown,
                     // codeFold : true,
                     // saveHTMLToTextarea : true,
                     // searchReplace : true,
@@ -119,7 +116,52 @@
                 $("#open-image-dialog").bind('click', function(){
                     testEditor.executePlugin("imageDialog", "<%=request.getContextPath()%>/resources/editormd/plugins/image-dialog/image-dialog"); // load and execute plugin
                 });
-            });
+            }
+//            );
+
+            function initialize() {
+                showArticleIfNecessary();
+            }
+
+            function showArticleIfNecessary() {
+                // if specify an article id, then we need to show article in editor.
+                var articleId = "${article_id}";
+                if (articleId != "") {
+                    $.get("/rest/article/" + articleId, function(article) {
+                        // strange, I can onlly set markdown content to editormd when first created.
+                        createEditor(article.markDown);
+                        $("#title").val(article.title);
+                        $("#category").val(article.categoryName);
+                        $("#tags").val(article.tags);
+                        $("#digest").val(article.digest);
+                    })
+                } else {
+                    createEditor("");
+                }
+            }
+
+            // save article, after server confirm it's been saved, then show it in article viewer page.
+            function saveAndShowArticle() {
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "/rest/article", true);
+                xhr.setRequestHeader("Content-type", "application/json");
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState == 4) {
+                        if (xhr.status == 200) {
+                            var article = JSON.parse(xhr.responseText);
+                            window.location.href = "/article/" + article.id;
+                        }
+                    }
+                };
+                var articleJson = {};
+                articleJson.title = $("#title").val();
+                articleJson.markDown = $("#content_markdown").val();
+                articleJson.categoryName = $("#category").val();
+                articleJson.tags = $("#tags").val();
+                articleJson.digest = $("#digest").val();
+
+                xhr.send(JSON.stringify(articleJson));
+            }
         </script>
     </body>
 </html>

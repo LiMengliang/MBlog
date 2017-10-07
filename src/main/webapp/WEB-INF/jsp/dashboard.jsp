@@ -112,17 +112,26 @@
         edit.textContent = "编辑";
         edit.setAttribute("class", "link");
         edit.onclick = function() {
-            // $.get("/article/edit", {article_id:article.id});
-            window.location.href = "/article/edit?article_id=" + article.id;
+            window.location.href = "/article/" + article.id + "/edit";
         }
         var del = document.createElement("h5");
         del.textContent = "删除";
         del.setAttribute("class", "link");
         del.onclick = function() {
-            $.get("/article/delete", {article_id:article.id},
-            function() {
-                tr.remove();
-            })
+
+            var mymessage=confirm("确认要删除这篇文章吗?");
+            if(mymessage==true) {
+                var xhr = new XMLHttpRequest();
+                xhr.open("DELETE", "/rest/article/" + article.id, true);
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState == 4) {
+                        if (xhr.status == 200) {
+                            tr.remove();
+                        }
+                    }
+                };
+                xhr.send();
+            }
         }
 
         titleTd.appendChild(title);
@@ -131,14 +140,13 @@
         editTd.appendChild(edit);
         delTd.appendChild(del);
         title.onclick = function() {
-            window.location.href="/blog/article?article_id=" + article.id;
+            window.location.href="/article/" + article.id;
         }
         return tr;
     }
 
     function addArticle() {
-        // $.get("/article/add");
-        window.location.href = "/article/add";
+         window.location.href = "/article/new";
     }
 </script>
 </body>

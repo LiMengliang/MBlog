@@ -157,7 +157,7 @@
         }
     }
     function queryCategories() {
-        $.get("/blog/categories", function(categories) {
+        $.get("/rest/categories", function(categories) {
             all_categories = categories;
             for(var i = 0; i < categories.length; i++) {
                 var category = categories[i];
@@ -215,7 +215,7 @@
         title.textContent = articleDigest.title;
         title.setAttribute("class", "title");
         title.onclick = function() {
-            window.location.href="/blog/article?article_id=" + articleDigest.articleId;
+            window.location.href="/article/" + articleDigest.articleId;
         }
 
         // digest

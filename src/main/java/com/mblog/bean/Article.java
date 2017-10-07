@@ -21,14 +21,14 @@ public class Article implements Serializable {
         this.id = id;
     }
 
-    private int id;
+    private int id = -1;
     private String title;
     private String markDown;
-    private String htmlDocument;
     private String categoryName;
     private String tags;
     private String digest;
     private Date date;
+    private String htmlDocument = "";
 
     public Article() {
 
@@ -73,7 +73,6 @@ public class Article implements Serializable {
     public void setMarkDown(String markDown) {
         this.markDown = markDown;
     }
-
     /**
      *get html document.
      * @return

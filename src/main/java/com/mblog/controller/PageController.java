@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 
@@ -23,70 +22,27 @@ import java.util.List;
 @Controller
 public class PageController {
 
-    /**
-     *
-     * @return
-     */
-    @RequestMapping(value = "/test", method = RequestMethod.GET)
-    @ResponseBody
-    public  Article test(Model model,HttpServletRequest request){
-        Article article = new Article();
-        article.setTitle("this is a test");
-        return article;
-    }
-    /**
-     *
-     * @return
-     */
-    @RequestMapping(value = "/article/add")
-    public  String addArticle(Model model,HttpServletRequest request){
-        model.addAttribute("article_creation_info", new ArticleCreationInfo(false, new Article()));
-        return "add_article";
-    }
+//    /**
+//     *
+//     * @return
+//     */
+//    @RequestMapping(value = "/test", method = RequestMethod.GET)
+//    @ResponseBody
+//    public  Article test(Model model,HttpServletRequest request){
+//        Article article = new Article();
+//        article.setTitle("this is a test");
+//        return article;
+//    }
+//    /**
+//     *
+//     * @return
+//     */
+//    @RequestMapping(value = "/article/add")
+//    public  String addArticle(Model model,HttpServletRequest request){
+//        model.addAttribute("article_creation_info", new ArticleCreationInfo(false, new Article()));
+//        return "article_editor";
+//    }
 
-    /**
-     * Post article.
-     * @param model Model from http.
-     * @param request Http servlet request.
-     * @return view_article page.
-     */
-    @RequestMapping(value = "/article/post")
-    public String postArticle(Model model, HttpServletRequest request) throws UnsupportedEncodingException {
-        request.setCharacterEncoding("UTF-8");
-        String html = request.getParameter("editormd-html-code");
-        String markdown = request.getParameter("markdownDoc");
-        String cateogry = request.getParameter("category");
-        String tags = request.getParameter("tags");
-        String title = request.getParameter("title");
-        String digest = request.getParameter("digest");
-        Date date = new Date();
-
-        Article article = new Article();
-        article.setDate(date);
-        article.setMarkDown(markdown);
-        article.setHtmlDocument(html);
-        article.setCategoryName(cateogry);
-        article.setTags(tags);
-        article.setTitle(title);
-        article.setDigest(digest);
-        model.addAttribute("article", article);
-
-        // Update category table.
-        CategoryService categoryService = new CategoryService();
-        categoryService.addCategoryIfNotExist(article.getCategoryName());
-
-        // Update article table;
-        ArticleService articleService = new ArticleService();
-        String isEdit = request.getParameter("is_edit");
-        String articleId = request.getParameter("article_id");
-        if (isEdit.equals("true")) {
-            articleService.update(articleId, article);
-        }
-        else {
-            articleService.addArticle(article);
-        }
-        return "view_article";
-    }
 
     @RequestMapping(value = "/blog")
     public String showBlog() {
@@ -110,33 +66,33 @@ public class PageController {
         return articles;
     }
 
-    @RequestMapping(value = "/blog/article")
-    public String showArticle(Model model, HttpServletRequest request) throws UnsupportedEncodingException {
-        request.setCharacterEncoding("UTF-8");
-        String article_id = request.getParameter("article_id");
-        ArticleService articleService = new ArticleService();
-        Article article = articleService.getArticleById(article_id);
-        model.addAttribute("article", article);
-        return "view_article";
-    }
+//    @RequestMapping(value = "/blog/article")
+//    public String showArticle(Model model, HttpServletRequest request) throws UnsupportedEncodingException {
+//        request.setCharacterEncoding("UTF-8");
+//        String article_id = request.getParameter("article_id");
+//        ArticleService articleService = new ArticleService();
+//        Article article = articleService.getArticleById(article_id);
+//        model.addAttribute("article", article);
+//        return "article_viewer";
+//    }
 
-    @RequestMapping(value = "/article/delete")
-    public String deleteArticle(HttpServletRequest request) {
-        String article_id = request.getParameter("article_id");
-        ArticleService articleService = new ArticleService();
-        Article article = articleService.getArticleById(article_id);
-        articleService.removeArticle(article);
-        return "dashboard";
-    }
+//    @RequestMapping(value = "/article/delete")
+//    public String deleteArticle(HttpServletRequest request) {
+//        String article_id = request.getParameter("article_id");
+//        ArticleService articleService = new ArticleService();
+//        Article article = articleService.getArticleById(article_id);
+//        articleService.removeArticle(article);
+//        return "dashboard";
+//    }
 
-    @RequestMapping(value = "/article/edit")
-    public String editArticle(Model model, HttpServletRequest request) {
-        String article_id = request.getParameter("article_id");
-        ArticleService articleService = new ArticleService();
-        Article article = articleService.getArticleById(article_id);
-        model.addAttribute("creationInfo", new ArticleCreationInfo(true, article));
-        return "add_article";
-    }
+//    @RequestMapping(value = "/article/edit")
+//    public String editArticle(Model model, HttpServletRequest request) {
+//        String article_id = request.getParameter("article_id");
+//        ArticleService articleService = new ArticleService();
+//        Article article = articleService.getArticleById(article_id);
+//        model.addAttribute("creationInfo", new ArticleCreationInfo(true, article));
+//        return "article_editor";
+//    }
 
     @RequestMapping(value = "/admin/login")
     public String adminLogin(HttpSession session) {
@@ -163,11 +119,11 @@ public class PageController {
         return auth;
     }
 
-    @RequestMapping(value = "/blog/categories")
-    public @ResponseBody List<Category> getArticleCategories() {
-        CategoryService categoryService = new CategoryService();
-        return categoryService.getCategories();
-    }
+//    @RequestMapping(value = "/blog/categories")
+//    public @ResponseBody List<Category> getArticleCategories() {
+//        CategoryService categoryService = new CategoryService();
+//        return categoryService.getCategories();
+//    }
 
     @RequestMapping(value = "/blog/article_digests")
     public @ResponseBody List<ArticleDigest> getArticleDigests(HttpServletRequest request) {
