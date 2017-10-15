@@ -1,4 +1,4 @@
-package com.mblog.common;
+package com.mblog.common.utils;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;

@@ -2,6 +2,7 @@ package com.mblog.controller;
 
 import com.mblog.bean.*;
 import com.mblog.service.ArticleService;
+import com.mblog.service.ArticleServiceImp;
 import com.mblog.service.AuthentificationService;
 import com.mblog.service.CategoryService;
 import org.springframework.stereotype.Controller;
@@ -20,7 +21,7 @@ import java.util.List;
  * Created by Mengliang Li on 5/6/2017.
  */
 @Controller
-public class PageController {
+public class PageControllerDesperated {
 
 //    /**
 //     *
@@ -60,7 +61,7 @@ public class PageController {
         request.setCharacterEncoding("UTF-8");
         // int startIndex = Integer.valueOf(request.getParameter("start_index"));
         // int count = Integer.valueOf(request.getParameter("count"));
-        ArticleService articleService = new ArticleService();
+        ArticleService articleService = new ArticleServiceImp();
         List<Article> articles = articleService.getArticles("", 0, 0);
         // model.addAttribute("articles", articles);
         return articles;
@@ -70,7 +71,7 @@ public class PageController {
 //    public String showArticle(Model model, HttpServletRequest request) throws UnsupportedEncodingException {
 //        request.setCharacterEncoding("UTF-8");
 //        String article_id = request.getParameter("article_id");
-//        ArticleService articleService = new ArticleService();
+//        ArticleServiceImp articleService = new ArticleServiceImp();
 //        Article article = articleService.getArticleById(article_id);
 //        model.addAttribute("article", article);
 //        return "article_viewer";
@@ -79,7 +80,7 @@ public class PageController {
 //    @RequestMapping(value = "/article/delete")
 //    public String deleteArticle(HttpServletRequest request) {
 //        String article_id = request.getParameter("article_id");
-//        ArticleService articleService = new ArticleService();
+//        ArticleServiceImp articleService = new ArticleServiceImp();
 //        Article article = articleService.getArticleById(article_id);
 //        articleService.removeArticle(article);
 //        return "dashboard";
@@ -88,7 +89,7 @@ public class PageController {
 //    @RequestMapping(value = "/article/edit")
 //    public String editArticle(Model model, HttpServletRequest request) {
 //        String article_id = request.getParameter("article_id");
-//        ArticleService articleService = new ArticleService();
+//        ArticleServiceImp articleService = new ArticleServiceImp();
 //        Article article = articleService.getArticleById(article_id);
 //        model.addAttribute("creationInfo", new ArticleCreationInfo(true, article));
 //        return "article_editor";
@@ -132,7 +133,7 @@ public class PageController {
         int count = Integer.valueOf(request.getParameter("count"));
         CategoryService categoryService = new CategoryService();
 
-        ArticleService articleService = new ArticleService();
+        ArticleService articleService = new ArticleServiceImp();
         List<Article> articles;
         if (category_id == "") {
             articles = articleService.getArticles("", 0, 0);

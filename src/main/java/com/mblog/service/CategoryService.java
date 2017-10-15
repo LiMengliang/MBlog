@@ -1,15 +1,11 @@
 package com.mblog.service;
 
-import com.mblog.bean.ArticleDigest;
 import com.mblog.bean.Category;
-import com.mblog.bean.Stock;
-import com.mblog.common.HibernateUtil;
+import com.mblog.common.utils.HibernateUtil;
 import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
